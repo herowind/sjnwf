@@ -1,0 +1,84 @@
+{extend name='admin@main'}
+
+{block name="button"}
+
+<!--{if auth("wechat/fans/setblack")}-->
+<button data-action='{:url("setblack")}' data-rule="openid#{key}" class='layui-btn layui-btn-sm layui-btn-primary'>批量拉黑</button>
+<!--{/if}-->
+
+<!--{if auth("wechat/fans/delblack")}-->
+<button data-action='{:url("delblack")}' data-rule="openid#{key}" class='layui-btn layui-btn-sm layui-btn-primary'>取消拉黑</button>
+<!--{/if}-->
+
+<!--{if auth("wechat/fans/del")}-->
+<button data-load='{:url("sync")}' class='layui-btn layui-btn-sm layui-btn-primary'>同步粉丝</button>
+<!--{/if}-->
+
+{/block}
+
+{block name="content"}
+
+<table class="layui-table" lay-skin="line">
+    <caption class="margin-bottom-10 text-left">{include file='fans/index_search'}</caption>
+    <!--{notempty name='list'}-->
+    <thead>
+    <tr>
+        <th class='list-table-check-td think-checkbox'><input data-auto-none data-check-target='.list-check-box' type='checkbox'></th>
+        <th class='text-left nowrap'>微信昵称</th>
+        <th width="150px" class='text-left nowrap'>性别语音</th>
+        <th width="180px" class='text-left nowrap'>关注时间</th>
+        <th class='text-left nowrap'>状态</th>
+    </tr>
+    </thead>
+    <!--{/notempty}-->
+    <tbody>
+    <!--{foreach $list as $key=>$vo}-->
+    <tr>
+        <td class='list-table-check-td think-checkbox'>
+            <input class="list-check-box" value='{$vo.openid}' type='checkbox'>
+        </td>
+        <td class='text-left nowrap relative layui-elip'>
+            <div class="background-image pull-left" data-tips-image="{$vo.headimgurl}" style="background-image:url('{$vo.headimgurl}')"></div>
+            昵称：{$vo.nickname}
+            <br>
+            区域：{$vo.country} {$vo.province} {$vo.city}
+        </td>
+        <td class='text-left nowrap'>
+            性别：{switch name='vo.sex'}{case value='1'}男{/case}{case value='2'}女{/case}{default}未知{/switch}
+            <br>
+            语言：{$vo.language|raw}
+        </td>
+        <td class='text-left nowrap'>
+            日期：{$vo.subscribe_at|format_datetime|str_replace=' ','<br>时间：',###|raw}
+        </td>
+        <td class='text-left nowrap'>
+
+            {eq name='vo.subscribe' value='0'}
+            <span class="layui-badge margin-right-10">未关注</span>
+            {else}
+            <span class="layui-badge layui-bg-green margin-right-10">已关注</span>
+            {/eq}
+
+            <br>
+
+            {eq name='vo.is_black' value='0'}
+            <span class="layui-badge layui-bg-green">未拉黑</span>
+            <!--{if auth("wechat/fans/setblack")}-->
+            <a style="top:-13px" class="margin-left-10 relative layui-btn layui-btn-primary layui-btn-sm" data-action="{:url('setblack')}" data-value="openid#{$vo.openid}">立即拉黑</a>
+            <!--{/if}-->
+            {else}
+            <span class="layui-badge">已拉黑</span>
+            <!--{if auth("wechat/fans/delblack")}-->
+            <a style="top:-13px" class="margin-left-10 relative layui-btn layui-btn-primary layui-btn-sm" data-action="{:url('delblack')}" data-value="openid#{$vo.openid}">取消拉黑</a>
+            <!--{/if}-->
+            {/eq}
+
+        </td>
+    </tr>
+    <!--{/foreach}-->
+    </tbody>
+</table>
+
+{empty name='list'}<span class="notdata">没有记录哦</span>{else}{$pagehtml|raw|default=''}{/empty}
+
+{/block}

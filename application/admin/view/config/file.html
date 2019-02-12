@@ -1,0 +1,27 @@
+{extend name="main"}
+
+{block name="content"}
+<div class="layui-tab layui-tab-card">
+    <ul class="layui-tab-title">
+        <!--{foreach ['local'=>'本地服务器存储','oss'=>'阿里云OSS存储','qiniu'=>'七牛云存储'] as $k => $v}-->
+        <li data-storagetype="{$k}">{$v}</li>
+        <!--{/foreach}-->
+    </ul>
+    <div class="layui-tab-content">
+        <div class="layui-tab-item">{include file='config/file_local'}</div>
+        <div class="layui-tab-item">{include file='config/file_oss'}</div>
+        <div class="layui-tab-item">{include file='config/file_qiniu'}</div>
+    </div>
+</div>
+{/block}
+
+{block name="script"}
+<script>
+    $(function () {
+        window.form.render();
+        var value = '{:sysconf("storage_type")}';
+        var $active = $("[data-storagetype='" + value + "']").trigger('click');
+        if ($active.size() < 1) $("[data-storagetype]:first").trigger('click');
+    });
+</script>
+{/block}
